@@ -4,6 +4,17 @@ import Home from './views/Home.vue'
 
 Vue.use(Router)
 
+function route (name) {
+  return {
+    path: '/' + name,
+    name: name,
+    component: resolve => {
+      console.log(`./views/${name.charAt(0).toUpperCase() + name.slice(1)}.vue`)
+      import(`./views/${name.charAt(0).toUpperCase() + name.slice(1)}.vue`).then(resolve)
+    }
+  }
+}
+
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -13,13 +24,9 @@ export default new Router({
       name: 'home',
       component: Home
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    }
+    route('inspire'),
+    route('welcome'),
+    route('about'),
+    route('corpus')
   ]
 })
