@@ -1,8 +1,13 @@
 <template>
-  <v-layout>
-    <v-flex text-xs-center>
-        <document v-for="doc in corpus.documents" :key="doc.fileid" :doc="doc"> </document>
+  <v-layout row wrap>
+    <v-flex xs12>
+      <h3> {{corpus.name}}</h3>
     </v-flex>
+    <template v-for="doc in corpus.documents">
+      <v-flex :key="doc.fileid" ma-2 md5>
+        <document :key="doc.fileid" :doc="doc"> </document>
+      </v-flex>
+    </template>
   </v-layout>
 </template>
 
@@ -17,8 +22,18 @@ export default {
         name: 'documents',
         readme: '',
         licence: '',
-        documents: $backend.$fetchDocuments()
+        documents: []
       }
+    }
+  },
+  mounted () {
+    this.getDocuments()
+  },
+  methods: {
+    async getDocuments () {
+      const docs = await $backend.$fetchDocuments()
+      console.log(docs)
+      this.corpus.documents = docs
     }
   }
 }

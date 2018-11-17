@@ -2,7 +2,7 @@
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
       <div class="text-xs-center">
-        <img src="/static/v.png" alt="Vuetify.js" class="mb-5" />
+        <img width="350px" src="../assets/logo.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
         <v-card-title>Welcome to the IRTK (Information Retrieval ToolKit).</v-card-title>
