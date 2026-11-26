@@ -1,7 +1,11 @@
 import axios from 'axios'
 
+// The Vite dev server forwards /polls/ to the Django backend (see vite.config.js).
+// Set VITE_API_URL to call a backend on another origin instead.
+export const API_URL = import.meta.env.VITE_API_URL || '/polls/'
+
 let $backend = axios.create({
-  baseURL: 'http://127.0.0.1:8000/polls/',
+  baseURL: API_URL,
   timeout: 5000,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true
@@ -11,7 +15,6 @@ let $backend = axios.create({
 $backend.interceptors.response.use(function (response) {
   return response
 }, function (error) {
-  // eslint-disable-next-line
   console.error(error)
   return Promise.reject(error)
 })

@@ -13,6 +13,8 @@
       <v-data-table
         :headers="headers"
         :items="results"
+        item-key="fileid"
+        :pagination.sync="pagination"
         hide-actions
         expand
       >
@@ -22,10 +24,7 @@
           <td class="text-xs-right">{{ item.tf_idf }}</td>
 
           <td>
-            <v-dialog v-model="dialog" max-width="500px">
-              <document :doc="previewing"></document>
-              <v-btn slot="activator" @click.stop="preview(item.fileid)" color="success" flat>Preview</v-btn>
-            </v-dialog>
+            <v-btn @click.stop="preview(item.fileid)" color="success" flat>Preview</v-btn>
           </td>
         </template>
 
@@ -35,6 +34,10 @@
           </v-alert>
         </template>
       </v-data-table>
+
+      <v-dialog v-model="dialog" max-width="500px">
+        <document :doc="previewing"></document>
+      </v-dialog>
     </v-flex>
   </v-layout>
 </template>
@@ -60,7 +63,11 @@ export default {
         { text: 'TF_IDF', value: 'tf_idf', align: 'right' },
         { text: 'Preview', value: 'fielid', sortable: false, align: 'center' }
       ],
-      results: []
+      // best match first
+      pagination: { sortBy: 'tf_idf', descending: true, rowsPerPage: -1 },
+      results: [],
+      // each keystroke sends a query; only the latest answer is shown
+      lastRequest: 0
     }
   },
   mounted () {
@@ -68,7 +75,9 @@ export default {
   },
   methods: {
     async updateResults () {
-      this.results = await $backend.$find(this.term)
+      const request = ++this.lastRequest
+      const results = await $backend.$find(this.term)
+      if (request === this.lastRequest) this.results = results
     },
     async preview (fileid) {
       const docs = await $backend.$fetchDocuments()

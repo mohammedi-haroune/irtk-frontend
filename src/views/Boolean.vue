@@ -37,7 +37,9 @@ export default {
     return {
       query: 'information',
       syntaxError: false,
-      documents: []
+      documents: [],
+      // each keystroke sends a query; only the latest answer is shown
+      lastRequest: 0
     }
   },
   mounted () {
@@ -45,12 +47,15 @@ export default {
   },
   methods: {
     updateResults () {
+      const request = ++this.lastRequest
       $backend.$boolean(this.query)
         .then(docs => {
+          if (request !== this.lastRequest) return
           this.syntaxError = false
           this.documents = docs
         })
         .catch(() => {
+          if (request !== this.lastRequest) return
           this.syntaxError = true
           this.documents = []
         })

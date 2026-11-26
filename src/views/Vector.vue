@@ -13,6 +13,8 @@
       <v-data-table
         :headers="headers"
         :items="results"
+        item-key="fileid"
+        :pagination.sync="pagination"
         hide-actions
         expand
       >
@@ -24,10 +26,7 @@
           <td class="text-xs-right">{{ item.jaccard_coef }}</td>
 
           <td>
-            <v-dialog v-model="dialog" max-width="500px">
-              <document :doc="previewing"></document>
-              <v-btn slot="activator" @click.stop="preview(item.fileid)" color="success" flat>Preview</v-btn>
-            </v-dialog>
+            <v-btn @click.stop="preview(item.fileid)" color="success" flat>Preview</v-btn>
           </td>
         </template>
 
@@ -37,6 +36,10 @@
           </v-alert>
         </template>
       </v-data-table>
+
+      <v-dialog v-model="dialog" max-width="500px">
+        <document :doc="previewing"></document>
+      </v-dialog>
     </v-flex>
   </v-layout>
 </template>
@@ -58,13 +61,17 @@ export default {
           sortable: false,
           value: 'fileid'
         },
-        { text: 'Inner Produce', value: 'inner_product', align: 'right' },
+        { text: 'Inner Product', value: 'inner_product', align: 'right' },
         { text: 'Dice Coef', value: 'dice_coef', align: 'right' },
         { text: 'Cosinus Measure', value: 'cosinus_measure', align: 'right' },
         { text: 'Jaccard Coef', value: 'jaccard_coef', align: 'right' },
         { text: 'Preview', value: 'fielid', sortable: false, align: 'center' }
       ],
-      results: []
+      // best match first
+      pagination: { sortBy: 'cosinus_measure', descending: true, rowsPerPage: -1 },
+      results: [],
+      // each keystroke sends a query; only the latest answer is shown
+      lastRequest: 0
     }
   },
   mounted () {
@@ -72,7 +79,9 @@ export default {
   },
   methods: {
     async updateResults () {
-      this.results = await $backend.$vector(this.query)
+      const request = ++this.lastRequest
+      const results = await $backend.$vector(this.query)
+      if (request === this.lastRequest) this.results = results
     },
     async preview (fileid) {
       const docs = await $backend.$fetchDocuments()

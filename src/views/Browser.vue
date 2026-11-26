@@ -32,7 +32,6 @@ export default {
   methods: {
     async getDocuments () {
       const docs = await $backend.$fetchDocuments()
-      console.log(docs)
       this.corpus.documents = docs
     }
   }
