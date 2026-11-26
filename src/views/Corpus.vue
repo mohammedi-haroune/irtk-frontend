@@ -47,10 +47,9 @@
 </template>
 
 <script>
-import Upload from 'element-ui'
+import { API_URL } from '../backend'
 
 export default {
-  componenets: { Upload },
   data: function () {
     return {
       name: '',
@@ -58,7 +57,7 @@ export default {
       description: '',
       data: {},
       selectedFiles: [],
-      apiUrl: 'http://localhost:8000/polls/upload_file',
+      apiUrl: API_URL + 'upload_file',
       headers: {
         'Content-Disposition': 'form-data; name="example"; filename="exceptionsup";'
       }
@@ -76,21 +75,17 @@ export default {
     onChange (file, filelist) {
       this.selectedFiles = filelist
     },
-    addCorpusNameData (file) {
+    addCorpusNameData () {
       this.data['CORPUS_NAME'] = this.name
       if (this.description !== this.defaultDescription) {
         this.data['CORPUS_DESCRIPTION'] = this.description
       }
     },
-    onSuccess (response, file, filelist) {
-      console.log(response)
-      console.log(file)
-      console.log(filelist)
+    onSuccess (response, file) {
+      this.$message.success(`${file.name} added to ${this.name}`)
     },
-    onError (err, file, filelist) {
-      console.log(err)
-      console.log(file)
-      console.log(filelist)
+    onError (err, file) {
+      this.$message.error(`Could not upload ${file.name}`)
     }
   }
 }

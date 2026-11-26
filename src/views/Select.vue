@@ -13,8 +13,8 @@
               :key="i"
             >
               <v-list-tile-content>
-                <v-list-tile-title v-text="field.key"></v-list-tile-title>
-                <v-list-tile-sub-title v-text="field.value"></v-list-tile-sub-title>
+                <v-list-tile-title>{{ field.key }}</v-list-tile-title>
+                <v-list-tile-sub-title>{{ field.value }}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
@@ -49,7 +49,7 @@
 
             <v-expand-transition>
               <v-card-text>
-                <template v-if="model" three-lines>
+                <template v-if="model">
                   <template
                     v-for="(field, i) in fields">
                     <h3 :key="'h3' + i">{{ field.key }}</h3>
@@ -115,7 +115,7 @@ export default {
   },
 
   watch: {
-    search (val) {
+    search () {
       // Items have already been loaded
       if (this.items.length > 0) return
 
@@ -148,7 +148,7 @@ export default {
     },
     selectCropus () {
       $backend.$selectCorpus(this.model.name)
-        .then(this.$store.commit('setCorpus', this.model))
+        .then(() => this.$store.commit('setCorpus', this.model))
     }
   }
 }
